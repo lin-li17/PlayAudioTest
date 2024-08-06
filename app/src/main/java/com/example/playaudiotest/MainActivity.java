@@ -1,12 +1,15 @@
 package com.example.playaudiotest;
 
+import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.media.FaceDetector;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.VideoView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,10 +18,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
 
     private MediaPlayer mediaPlayer = new MediaPlayer();
+    private VideoView videoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +55,26 @@ public class MainActivity extends AppCompatActivity {
                 initMediaPlayer();//重新回到准备状态
             }
         });
+        Uri uri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + getPackageName() + "/raw/video");
+        videoView = findViewById(R.id.videoView);
+        videoView.setVideoURI(uri);
+        Button button2 = findViewById(R.id.button4);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!videoView.isPlaying()){
+                    videoView.start();
+                }else videoView.pause();
+            }
+        });
+        Button button3 = findViewById(R.id.button5);
+        button3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                videoView.resume();
+                videoView.pause();
+            }
+        });
     }
     private void initMediaPlayer(){
         AssetManager assetManager = getAssets();
@@ -67,5 +92,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         mediaPlayer.stop();
         mediaPlayer.release();
+        videoView.suspend();
     }
 }
